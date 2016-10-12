@@ -102,7 +102,7 @@
 		$(this).addClass("with-value");
 		$(this).attr("value", $(this).val());
 		$('input.with-value').change(function() {
-			console.log("teste");
+			console.log("roque");
 		})
 	})
 
