@@ -4,7 +4,6 @@
 
 // Implementation:
 
-
 (function() {
 	'use strict';
 	//function definition
@@ -15,42 +14,27 @@
 		requestBoard();
 	}
 
-
 	var requestBoard = function()
 	{
 		var option = $("#select-mode option:selected").val();
 
-		$.get( "http://198.211.118.123:8080/board/", {option} )
+		$.get( "http://198.211.118.123:8080/board/"+option)
 			.done(function(data) {
 				populateInitialTable(data);
 				$("#loading").addClass("invisible");
 			});
 	}	
 
-
-
 	var populateInitialTable = function(data){
-
-		//put clear here
-		$("input").val('');
-		$("input").removeAttr("value");
-		$("input").attr("value", "3");
-
+		cleanTable();
 		for(var i = 0; i < data.length; i++)
 		{	
 			$("input[data-column="+data[i].column+"][data-line="+data[i].line+"]")
-			//.attr("value", data[i].value);
-			.val(data[i].value);
-			
-			$("input[data-column="+data[i].column+"][data-line="+data[i].line+"]")
+			.val(data[i].value)
+			.attr("value", data[i].value)
 			.addClass("initial")
 			.attr("disabled", true);
-			
-			
-			if(1);
 		}
-
-
 	}
 
 	var fillStudentInfo = function () {
@@ -67,64 +51,49 @@
 		$(students[2]).find("p").eq(0).text("Tiago Rato Fernandes");
 	}
 
-	//TODO Generate a new game
+	//Botão de novo jogo
 	$("#btn-new").click(function() {
 		event.preventDefault();
 		$("#loading").removeClass("invisible");
+		cleanTable();
 
-		$('input.with-value')
-		.removeAttr("value")
-		.removeClass('with-value');
-
-		$('input:disabled.initial')
-		.removeAttr("value")
-		.removeAttr("disabled")
-		.removeClass("initial");
-		
 		requestBoard();
 	});
 
+	//Limpar tabela
+	var cleanTable = function () {
+		$("input.with-value")
+		.val('')
+		.removeAttr("value")
+		.removeClass("with-value");
 
-	//ERROR
-	
-	
-	/*$("input").on("change", function() {
-		if($(this).hasClass("with-value")) {
-			$(this).removeClass("with-value");
-		} else {
-			$(this).addClass("with-value");
-			$(this).attr("value", $(this).val());
-		}
-	})*/
+		$("input:disabled.initial")
+		.removeAttr("disabled")
+		.val('')
+		.removeAttr("value")
+		.removeClass("initial");
+	}
 
-	// COMPLETE Add value attribute when changed
-	$("input:empty").on("change", function() {
+
+	$("input").on("change", function () {
 		$(this).addClass("with-value");
-		$(this).attr("value", $(this).val());
-		$('input.with-value').change(function() {
-			console.log("roque");
+		$(this).attr("value", $(this).val());	
+		$("input.with-value").on("change", function() {
+			//$(this).removeClass("with-value");
+		})		
+		$("input.with-value").on("dblclick", function(){
+			$(this).addClass("individual-highlight");
+			setTimeout(function(){ 
+				$("input.with-value").removeClass("individual-highlight"); 
+			}, 5000);
 		})
-	})
+	});
 
-
-	//TODO
-	// Individual HighLight by double clicking
-	/*$(".with-value").on("click", function(){
-		console.log("teste");
-	})*/
-
-	/*$(".with-value").on("focusout", function(){
-		$(this).removeClass("individual-highlight");
-	})*/
-
-
-	// COMPLETE: Highlight a specific number for 5 seconds
+	// Highlight a specific number for 5 seconds
 	$("#highlightButtons :button").on("click", function(){
 		var number = $(this).val();
-		var found = $(".dad-board").find(":input[value="+number+"]").addClass("highlight");
+		var found = $(".dad-board").find("input[value="+number+"]").addClass("highlight");
 		setTimeout(function(){ found.removeClass("highlight"); }, 5000);
-		
-
 	});
 
 
@@ -132,4 +101,3 @@
 
 
 })();
-
