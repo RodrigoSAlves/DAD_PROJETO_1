@@ -125,17 +125,26 @@
 
 		//[8] REMOVE CLASS WITH-VALUE
 		$("input.with-value").on("change", function() {
-			if($(this).val() === '')
+			if($(this).val() === '') {
 				$(this).removeClass("with-value");
+			}
+
 		})
 
+		// Por algum motivo depois de preencher um campo e em seguida limpa-lo este continua a ser possivel fazer highligh!!!
 		$("input.with-value").on("dblclick", function(){
-			$(this).addClass("individual-highlight");
+			var input = $(this).addClass("individual-highlight");
 			setTimeout(function(){ 
-				$("input.with-value").removeClass("individual-highlight"); 
+				input.removeClass("individual-highlight"); 
 			}, 5000);
 		})
+		
+		//verify();
 	});
+
+	var verify = function () {
+		//$(".dad-row .dad-cell").css("background", "orange");
+	}
 	
 
 	// [4] HIGHLIGHT BUTTONS
