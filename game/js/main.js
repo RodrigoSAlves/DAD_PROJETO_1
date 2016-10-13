@@ -115,10 +115,15 @@
 
 		$("input.highlight").removeClass("highlight");
 		$("input.individual-highlight").removeClass("individual-highlight");
+		$("input.individual-conflict").removeClass("individual-conflict");
 	}
 
-		//[7] ADD CLASS WITH VALUE
+
+
+	//[7] ADD CLASS WITH VALUE
+	
 	$("input:not(.initial)").on("change", function () {
+		$("input.individual-conflict").removeClass("individual-conflict");
 
 		timer();
 		$(this).addClass("with-value");
@@ -132,6 +137,7 @@
 
 
 	});
+	
 
 	// [4] HIGHLIGHT BUTTONS
 	$("#highlightButtons :button").on("click", function(){
