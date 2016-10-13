@@ -16,15 +16,31 @@
 
 	var checkTable = function() {  
 		var board=[];
-		
-		for (var i = 0; i < 8 ; i++) {
-			for (var j = 0; j < 8 ; j++) {
+
+		for (var i = 0; i < 9 ; i++) {
+			for (var j = 0; j < 9 ; j++) {
 				if ($("input[data-column="+j+"][data-line="+i+"]").val()!=0) {
-					board.push({"line":i,"column":j,"value":$("input[data-column="+j+"][data-line="+i+"]").val(),"fixed":($("input[data-column="+j+"][data-line="+i+"]").prop("disabled")?true:false)});
+					board.push({"line":i,"column":j,"value":""+$("input[data-column="+j+"][data-line="+i+"]").val(),"fixed":($("input[data-column="+j+"][data-line="+i+"]").prop("disabled")?true:false)});
 				}
 			}
 		}
-		$.post("http://198.211.118.123:8080/board/check", {board});
+
+		$.ajax({
+		    url: 'http://198.211.118.123:8080/board/check',
+		    type: 'POST',
+		    data: JSON.stringify(board),
+		    contentType: 'application/json; charset=utf-8',
+		    dataType: 'json',
+		    success: function(data) {
+				$("#loading").addClass("invisible");
+		        for(var i = 0; i < data.conflicts.length; i++)
+				{	
+					$("input[data-column="+data.conflicts[i].column+"][data-line="+data.conflicts[i].line+"]")
+					.addClass("individual-conflict");
+				}
+				setTimeout(function(){ $("input.individual-conflict").removeClass("individual-conflict"); }, 5000);
+		    }
+		});
 	}
 
 	var requestBoard = function()
@@ -35,6 +51,9 @@
 			.done(function(data) {
 				populateInitialTable(data);
 				$("#loading").addClass("invisible");
+			})
+			.fail(function () {
+				console.log("fail")
 			});
 	}	
 
@@ -74,6 +93,7 @@
 	});
 
 	$("#btn-check").click(function() {
+		$("#loading").removeClass("invisible");
 		checkTable();
 	})
 
