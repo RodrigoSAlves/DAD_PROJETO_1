@@ -9,6 +9,7 @@
 	//function definition
 
 	var initialTime;
+	var currentTimeouts = [];
 
 	var init = function()
 	{	
@@ -41,7 +42,8 @@
 					$("input[data-column="+data.conflicts[i].column+"][data-line="+data.conflicts[i].line+"]")
 					.addClass("individual-conflict");
 				}
-				setTimeout(function(){ $("input.individual-conflict").removeClass("individual-conflict"); }, 5000);
+				var id = setTimeout(function(){ $("input.individual-conflict").removeClass("individual-conflict"); }, 5000);
+				currentTimeouts.push(id);
 		    }
 		});
 	}
@@ -101,6 +103,7 @@
 		$("#loading").removeClass("invisible");
 		checkTable();
 	})
+
 	//Limpar tabela
 	var clearTable = function () {
 		$("input.with-value")
@@ -117,6 +120,8 @@
 		$("input.highlight").removeClass("highlight");
 		$("input.individual-highlight").removeClass("individual-highlight");
 		$("input.individual-conflict").removeClass("individual-conflict");
+		if(currentTimeouts.length !=0 )
+			stopTimeouts();
 	}
 
 	//[7] EXCEPTION: html type="number" accepts numbers as well as "e"
@@ -153,9 +158,8 @@
 		// Por algum motivo depois de preencher um campo e em seguida limpa-lo este continua a ser possivel fazer highligh!!!
 		$("input.with-value").on("dblclick", function(){
 			var input = $(this).addClass("individual-highlight");
-			setTimeout(function(){ 
-				input.removeClass("individual-highlight"); 
-			}, 5000);
+			var id = setTimeout(function(){ input.removeClass("individual-highlight"); }, 5000);
+			currentTimeouts.push(id);
 		})
 		
 		//verify();
@@ -171,7 +175,8 @@
 		$("input.highlight").removeClass("highlight");
 		var number = $(this).val();
 		var found = $(".dad-board").find("input[value="+number+"]").addClass("highlight");
-		var timeout = setTimeout(function(){ found.removeClass("highlight"); }, 5000);
+		var id = setTimeout(function(){ found.removeClass("highlight"); }, 5000);
+		currentTimeouts.push(id);
 	});
 
 	var timer = function(){
@@ -184,9 +189,16 @@
 		gameMilis /= 60;
 		var hours = Math.round(gameMilis % 24);
 
-
 		console.log("seconds " + seconds + " minutes " + minutes + " hours " + hours);
 
+	}
+
+	var stopTimeouts = function(){
+		for(var i = 0; i < currentTimeouts.length; i++)
+		{	
+			clearTimeout(currentTimeouts[i]);
+		}
+		currentTimeouts = [];
 	}
 
 
