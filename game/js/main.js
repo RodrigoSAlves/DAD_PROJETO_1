@@ -8,6 +8,8 @@
 	'use strict';
 	//function definition
 
+	var initialTime;
+
 	var init = function()
 	{	
 		fillStudentInfo();
@@ -17,16 +19,33 @@
 
 	var checkTable = function() {  
 		var board=[];
-		
-		for (var i = 0; i < 8 ; i++) {
-			for (var j = 0; j < 8 ; j++) {
+
+		for (var i = 0; i < 9 ; i++) {
+			for (var j = 0; j < 9 ; j++) {
 				if ($("input[data-column="+j+"][data-line="+i+"]").val()!=0) {
-					board.push({"line":i,"column":j,"value":$("input[data-column="+j+"][data-line="+i+"]").val(),"fixed":($("input[data-column="+j+"][data-line="+i+"]").prop("disabled")?true:false)});
+					board.push({"line":i,"column":j,"value":""+$("input[data-column="+j+"][data-line="+i+"]").val(),"fixed":($("input[data-column="+j+"][data-line="+i+"]").prop("disabled")?true:false)});
 				}
 			}
 		}
-		$.post("http://198.211.118.123:8080/board/check", {board});
+
+		$.ajax({
+		    url: 'http://198.211.118.123:8080/board/check',
+		    type: 'POST',
+		    data: JSON.stringify(board),
+		    contentType: 'application/json; charset=utf-8',
+		    dataType: 'json',
+		    success: function(data) {
+				$("#loading").addClass("invisible");
+		        for(var i = 0; i < data.conflicts.length; i++)
+				{	
+					$("input[data-column="+data.conflicts[i].column+"][data-line="+data.conflicts[i].line+"]")
+					.addClass("individual-conflict");
+				}
+				setTimeout(function(){ $("input.individual-conflict").removeClass("individual-conflict"); }, 5000);
+		    }
+		});
 	}
+
 
 	var requestBoard = function()
 	{
@@ -36,6 +55,9 @@
 			.done(function(data) {
 				populateInitialTable(data);
 				$("#loading").addClass("invisible");
+			})
+			.fail(function () {
+				console.log("fail")
 			});
 	}	
 
@@ -49,6 +71,7 @@
 			.addClass("initial")
 			.attr("disabled", true);
 		}
+		initialTime = new Date();
 	}
 
 	var fillStudentInfo = function () {
@@ -75,25 +98,25 @@
 	});
 
 	$("#btn-check").click(function() {
+		$("#loading").removeClass("invisible");
 		checkTable();
 	})
-
 	//Limpar tabela
 	var clearTable = function () {
 		$("input.with-value")
 		.val('')
 		.removeAttr("value")
 		.removeClass("with-value")
-		.removeClass("individual-highlight")
-		.removeClass("highlight");
 
 		$("input:disabled.initial")
 		.removeAttr("disabled")
 		.val('')
 		.removeAttr("value")
 		.removeClass("initial")
-		.removeClass("individual-highlight")
-		.removeClass("highlight");
+
+		$("input.highlight").removeClass("highlight");
+		$("input.individual-highlight").removeClass("individual-highlight");
+		$("input.individual-conflict").removeClass("individual-conflict");
 	}
 
 	//[7] EXCEPTION: html type="number" accepts numbers as well as "e"
@@ -104,36 +127,68 @@
 		}
 	});
 
-	//[7]add class with value
+
+	//[7] ADD CLASS WITH VALUE
+	
 	$("input:not(.initial)").on("change", function () {
+		$("input.individual-conflict").removeClass("individual-conflict");
+		
 		if(!($(this).val() < 0 || $(this).val() > 9 || $(this).val().length > 1)){
 			$(this).addClass("with-value");
 			$(this).attr("value", $(this).val());
+			timer();
 		}
 		else{
 			$(this).val("");
 		}
+
 		//[8] REMOVE CLASS WITH-VALUE
 		$("input.with-value").on("change", function() {
-			if($(this).val() === '')
+			if($(this).val() === '') {
 				$(this).removeClass("with-value");
+			}
+
 		})
 
+		// Por algum motivo depois de preencher um campo e em seguida limpa-lo este continua a ser possivel fazer highligh!!!
 		$("input.with-value").on("dblclick", function(){
-			$(this).addClass("individual-highlight");
+			var input = $(this).addClass("individual-highlight");
 			setTimeout(function(){ 
-				$("input.with-value").removeClass("individual-highlight"); 
+				input.removeClass("individual-highlight"); 
 			}, 5000);
 		})
+		
+		//verify();
 	});
 
-	// Highlight a specific number for 5 seconds
+	var verify = function () {
+		//$(".dad-row .dad-cell").css("background", "orange");
+	}
+	
+
+	// [4] HIGHLIGHT BUTTONS
 	$("#highlightButtons :button").on("click", function(){
-		$(".dad-board").find("input.highlight").removeClass("highlight");
+		$("input.highlight").removeClass("highlight");
 		var number = $(this).val();
 		var found = $(".dad-board").find("input[value="+number+"]").addClass("highlight");
 		var timeout = setTimeout(function(){ found.removeClass("highlight"); }, 5000);
 	});
+
+	var timer = function(){
+
+		var gameMilis = new Date() - initialTime;
+		gameMilis /= 1000;
+		var seconds = Math.round(gameMilis % 60);
+		gameMilis /= 60;
+		var minutes = Math.round(gameMilis % 60);
+		gameMilis /= 60;
+		var hours = Math.round(gameMilis % 24);
+
+
+		console.log("seconds " + seconds + " minutes " + minutes + " hours " + hours);
+
+	}
+
 
 	init();
 
