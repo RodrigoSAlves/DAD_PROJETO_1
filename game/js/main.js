@@ -96,32 +96,36 @@
 		$("#loading").removeClass("invisible");
 		checkTable();
 	})
-
 	//Limpar tabela
 	var clearTable = function () {
 		$("input.with-value")
 		.val('')
 		.removeAttr("value")
 		.removeClass("with-value")
-		.removeClass("individual-highlight")
-		.removeClass("highlight");
 
 		$("input:disabled.initial")
 		.removeAttr("disabled")
 		.val('')
 		.removeAttr("value")
 		.removeClass("initial")
-		.removeClass("individual-highlight")
-		.removeClass("highlight");
+
+		$("input.highlight").removeClass("highlight");
+		$("input.individual-highlight").removeClass("individual-highlight");
 	}
 
 
-	$("input").on("change", function () {
+		//[7] ADD CLASS WITH VALUE
+	$("input:not(.initial)").on("change", function () {
+
 		$(this).addClass("with-value");
-		$(this).attr("value", $(this).val());	
+		$(this).attr("value", $(this).val());
+
+		//[8] REMOVE CLASS WITH-VALUE
 		$("input.with-value").on("change", function() {
-			//$(this).removeClass("with-value");
-		})		
+			if($(this).val() === '')
+				$(this).removeClass("with-value");
+		})
+
 		$("input.with-value").on("dblclick", function(){
 			$(this).addClass("individual-highlight");
 			setTimeout(function(){ 
@@ -130,13 +134,14 @@
 		})
 	});
 
-	// Highlight a specific number for 5 seconds
+	// [4] HIGHLIGHT BUTTONS
 	$("#highlightButtons :button").on("click", function(){
-		$(".dad-board").find("input.highlight").removeClass("highlight");
+		$("input.highlight").removeClass("highlight");
 		var number = $(this).val();
 		var found = $(".dad-board").find("input[value="+number+"]").addClass("highlight");
 		var timeout = setTimeout(function(){ found.removeClass("highlight"); }, 5000);
 	});
+
 
 
 	init();
