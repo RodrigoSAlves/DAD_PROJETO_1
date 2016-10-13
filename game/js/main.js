@@ -8,6 +8,8 @@
 	'use strict';
 	//function definition
 
+	var initialTime;
+
 	var init = function()
 	{	
 		fillStudentInfo();
@@ -43,6 +45,7 @@
 		});
 	}
 
+
 	var requestBoard = function()
 	{
 		var option = $("#select-mode option:selected").val();
@@ -67,6 +70,7 @@
 			.addClass("initial")
 			.attr("disabled", true);
 		}
+		initialTime = new Date();
 	}
 
 	var fillStudentInfo = function () {
@@ -115,11 +119,13 @@
 	}
 
 
-	//[7] ADD CLASS WITH VALUE
 
+	//[7] ADD CLASS WITH VALUE
+	
 	$("input:not(.initial)").on("change", function () {
 		$("input.individual-conflict").removeClass("individual-conflict");
 
+		timer();
 		$(this).addClass("with-value");
 		$(this).attr("value", $(this).val());
 
@@ -155,6 +161,21 @@
 		var timeout = setTimeout(function(){ found.removeClass("highlight"); }, 5000);
 	});
 
+
+	var timer = function(){
+
+		var gameMilis = new Date() - initialTime;
+		gameMilis /= 1000;
+		var seconds = Math.round(gameMilis % 60);
+		gameMilis /= 60;
+		var minutes = Math.round(gameMilis % 60);
+		gameMilis /= 60;
+		var hours = Math.round(gameMilis % 24);
+
+
+		console.log("seconds " + seconds + " minutes " + minutes + " hours " + hours);
+
+	}
 
 
 	init();
