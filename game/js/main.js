@@ -12,6 +12,7 @@
 	{	
 		fillStudentInfo();
 		requestBoard();
+		$("input:not(.initial)").attr("min", 0).attr("max", 9);
 	}
 
 	var checkTable = function() {  
@@ -95,13 +96,29 @@
 		.removeClass("highlight");
 	}
 
+	//[7] EXCEPTION: html type="number" accepts numbers as well as "e"
+	// To solve this exception we need to use keyup as onchange doesn't work
+	$("input:not(.initial)").on("keyup", function(event){
+		if(event.key == "e"){
+			$(this).val("");
+		}
+	});
 
-	$("input").on("change", function () {
-		$(this).addClass("with-value");
-		$(this).attr("value", $(this).val());	
+	//[7]add class with value
+	$("input:not(.initial)").on("change", function () {
+		if(!($(this).val() < 0 || $(this).val() > 9 || $(this).val().length > 1)){
+			$(this).addClass("with-value");
+			$(this).attr("value", $(this).val());
+		}
+		else{
+			$(this).val("");
+		}
+		//[8] REMOVE CLASS WITH-VALUE
 		$("input.with-value").on("change", function() {
-			//$(this).removeClass("with-value");
-		})		
+			if($(this).val() === '')
+				$(this).removeClass("with-value");
+		})
+
 		$("input.with-value").on("dblclick", function(){
 			$(this).addClass("individual-highlight");
 			setTimeout(function(){ 
@@ -117,7 +134,6 @@
 		var found = $(".dad-board").find("input[value="+number+"]").addClass("highlight");
 		var timeout = setTimeout(function(){ found.removeClass("highlight"); }, 5000);
 	});
-
 
 	init();
 
