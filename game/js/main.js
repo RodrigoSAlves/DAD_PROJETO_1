@@ -21,30 +21,33 @@
 	var checkTable = function() {  
 		var board=[];
 
-		for (var i = 0; i < 9 ; i++) {
-			for (var j = 0; j < 9 ; j++) {
-				if ($("input[data-column="+j+"][data-line="+i+"]").val()!=0) {
-					board.push({"line":i,"column":j,"value":""+$("input[data-column="+j+"][data-line="+i+"]").val(),"fixed":($("input[data-column="+j+"][data-line="+i+"]").prop("disabled")?true:false)});
-				}
+		$(".dad-row").find("input").each(function (){
+			if($(this).val() !== ""){
+				board.push({"line": parseInt($(this).attr("data-line"),10),
+						"column": parseInt($(this).attr("data-column"),10),
+						"value":$(this).val(),
+						"fixed": $(this).prop("disabled")?true:false
+						});
 			}
-		}
+			
+		})
 
 		$.ajax({
-		    url: 'http://198.211.118.123:8080/board/check',
-		    type: 'POST',
-		    data: JSON.stringify(board),
-		    contentType: 'application/json; charset=utf-8',
-		    dataType: 'json',
-		    success: function(data) {
+			url: 'http://198.211.118.123:8080/board/check',
+			type: 'POST',
+			data: JSON.stringify(board),
+			contentType: 'application/json; charset=utf-8',
+			dataType: 'json',
+			success: function(data) {
 				$("#loading").addClass("invisible");
-		        for(var i = 0; i < data.conflicts.length; i++)
+				for(var i = 0; i < data.conflicts.length; i++)
 				{	
 					$("input[data-column="+data.conflicts[i].column+"][data-line="+data.conflicts[i].line+"]")
 					.addClass("individual-conflict");
 				}
 				var id = setTimeout(function(){ $("input.individual-conflict").removeClass("individual-conflict"); }, 5000);
 				currentTimeouts.push(id);
-		    }
+			}
 		});
 	}
 
@@ -54,13 +57,13 @@
 		var option = $("#select-mode option:selected").val();
 
 		$.get( "http://198.211.118.123:8080/board/"+option)
-			.done(function(data) {
-				populateInitialTable(data);
-				$("#loading").addClass("invisible");
-			})
-			.fail(function () {
-				console.log("fail")
-			});
+		.done(function(data) {
+			populateInitialTable(data);
+			$("#loading").addClass("invisible");
+		})
+		.fail(function () {
+			console.log("Something went wrong");
+		});
 	}	
 
 	var populateInitialTable = function(data){
@@ -95,7 +98,6 @@
 		event.preventDefault();
 		$("#loading").removeClass("invisible");
 		clearTable();
-
 		requestBoard();
 	});
 
@@ -104,23 +106,20 @@
 		checkTable();
 	})
 
-	//Limpar tabela
+	
 	var clearTable = function () {
-		$("input.with-value")
-		.val('')
-		.removeAttr("value")
-		.removeClass("with-value")
+		$(".with-value").val('').removeAttr("value").removeClass("with-value");
 
-		$("input:disabled.initial")
-		.removeAttr("disabled")
-		.val('')
-		.removeAttr("value")
-		.removeClass("initial")
+		$("input:disabled.initial").removeAttr("disabled").val('').removeAttr("value").removeClass("initial");
 
-		$("input.highlight").removeClass("highlight");
-		$("input.individual-highlight").removeClass("individual-highlight");
-		$("input.individual-conflict").removeClass("individual-conflict");
+		$(".highlight").removeClass("highlight");
+
+		$(".individual-highlight").removeClass("individual-highlight");
+
+		$(".individual-conflict").removeClass("individual-conflict");
+
 		if(currentTimeouts.length !=0 )
+
 			stopTimeouts();
 	}
 
@@ -133,42 +132,59 @@
 	});
 
 
-	//[7] ADD CLASS WITH VALUE
-	
-	$("input:not(.initial)").on("change", function () {
+	//Input :not(.initial) handler.
+	$(".dad-board").on("change", "input:not(.initial)", function(){
+
 		$("input.individual-conflict").removeClass("individual-conflict");
-		
-		if(!($(this).val() < 0 || $(this).val() > 9 || $(this).val().length > 1)){
-			$(this).addClass("with-value");
-			$(this).attr("value", $(this).val());
-			timer();
+
+		if($(this).val() === '')
+		{
+			$(this).removeClass("with-value");
+			$(this).removeAttr("value");
 		}
 		else{
-			$(this).val("");
-		}
-
-		//[8] REMOVE CLASS WITH-VALUE
-		$("input.with-value").on("change", function() {
-			if($(this).val() === '') {
-				$(this).removeClass("with-value");
+			if(!($(this).val() < 0 || $(this).val() > 9 || $(this).val().length > 1))
+			{
+				$(this).addClass("with-value");
+				$(this).attr("value", $(this).val());
 			}
-
-		})
-
-		// Por algum motivo depois de preencher um campo e em seguida limpa-lo este continua a ser possivel fazer highligh!!!
-		$("input.with-value").on("dblclick", function(){
-			var input = $(this).addClass("individual-highlight");
-			var id = setTimeout(function(){ input.removeClass("individual-highlight"); }, 5000);
-			currentTimeouts.push(id);
-		})
-		
-		//verify();
+		}
 	});
 
 	var verify = function () {
-		//$(".dad-row .dad-cell").css("background", "orange");
+		var values=[];
+		var numbers;
+		var object={};
+		for (var i = 0; i < 9; i++) {
+			for(var j = 0 ; j < 9 ; j++) {
+				values[j]=($("input[data-column="+j+"][data-line="+i+"]").val());
+			}
+			numbers=0;
+			for (var v = 1; v < 10; v++) {
+				if($.inArray(""+v, values)!=-1) {
+					numbers++;
+				}
+			}
+			var k=0;
+
+			if(numbers == 9) {
+				$("input[data-line="+i+"]").parent().each( function(){
+					$(this).animate({backgroundColor: "#FF8C00"}, 1000)
+						.delay(2000).animate({backgroundColor: "#FFFFFF"}, 1000).delay(1000);				
+					k++;
+
+				})
+			}
+		}
+		
 	}
-	
+
+
+	$(".dad-board").on("dblclick", 'input.with-value', function(){
+		$(this).addClass("individual-highlight");
+		var id = setTimeout(function(){ $(this).removeClass("individual-highlight"); }, 5000);
+		currentTimeouts.push(id);
+	});
 
 	// [4] HIGHLIGHT BUTTONS
 	$("#highlightButtons :button").on("click", function(){
@@ -189,8 +205,6 @@
 		gameMilis /= 60;
 		var hours = Math.round(gameMilis % 24);
 
-		console.log("seconds " + seconds + " minutes " + minutes + " hours " + hours);
-
 	}
 
 	var stopTimeouts = function(){
@@ -199,6 +213,24 @@
 			clearTimeout(currentTimeouts[i]);
 		}
 		currentTimeouts = [];
+	}
+
+	var animateSquare = function(input){
+
+		var sline = Math.ceil(input.attr("data-line") / 3);
+		var scol = Math.ceil(input.attr("data-column") /3);
+
+		var firstElemLine = (sline - 1) * 3;
+		var firstElemCol = (scol - 1) * 3;
+
+		for(var i = sline; i < sline + 3; i++)
+		{
+			for(var j = scol; j < scol + 3; j++)
+			{
+
+			}
+		}
+
 	}
 
 
