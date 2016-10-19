@@ -10,6 +10,9 @@
 
 	var initialTime;
 	var currentTimeouts = [];
+	var indivHighlights = [];
+	var groupHighlights = [];
+	var completedRows = [];
 
 	var init = function()
 	{	
@@ -29,7 +32,6 @@
 						"fixed": $(this).prop("disabled")?true:false
 						});
 			}
-			
 		})
 
 		$.ajax({
@@ -50,7 +52,6 @@
 			}
 		});
 	}
-
 
 	var requestBoard = function()
 	{
@@ -93,20 +94,6 @@
 		$(students[2]).find("p").eq(0).text("Tiago Rato Fernandes");
 	}
 
-	//Botão de novo jogo
-	$("#btn-new").click(function() {
-		event.preventDefault();
-		$("#loading").removeClass("invisible");
-		clearTable();
-		requestBoard();
-	});
-
-	$("#btn-check").click(function() {
-		$("#loading").removeClass("invisible");
-		checkTable();
-	})
-
-	
 	var clearTable = function () {
 		$(".with-value").val('').removeAttr("value").removeClass("with-value");
 
@@ -123,7 +110,23 @@
 			stopTimeouts();
 	}
 
-	//[7] EXCEPTION: html type="number" accepts numbers as well as "e"
+	//NEW GAME BUTTON
+	$("#btn-new").click(function() {
+		event.preventDefault();
+		$("#loading").removeClass("invisible");
+		clearTable();
+		requestBoard();
+	});
+
+	//CHECK GAME BUTTON
+	$("#btn-check").click(function() {
+		$("#loading").removeClass("invisible");
+		checkTable();
+	})
+
+	
+
+	//EXCEPTION: html type="number" accepts numbers as well as "e"
 	// To solve this exception we need to use keyup as onchange doesn't work
 	$("input:not(.initial)").on("keyup", function(event){
 		if(event.key == "e"){
@@ -132,7 +135,7 @@
 	});
 
 
-	//Input :not(.initial) handler.
+	//INPUT :NOT(.INITIAL) HANDLER
 	$(".dad-board").on("change", "input:not(.initial)", function(){
 
 		$("input.individual-conflict").removeClass("individual-conflict");
@@ -143,50 +146,47 @@
 			$(this).removeAttr("value");
 		}
 		else{
-			if(!($(this).val() < 0 || $(this).val() > 9 || $(this).val().length > 1))
+			if($(this).val() < 0 || $(this).val() > 9 || $(this).val().length > 1)
 			{
+				$(this).val("");
+			}
+			else{
 				$(this).addClass("with-value");
 				$(this).attr("value", $(this).val());
 			}
 		}
+		verify();
 	});
 
-	var verify = function () {
-		var values=[];
-		var numbers;
-		var object={};
-		for (var i = 0; i < 9; i++) {
-			for(var j = 0 ; j < 9 ; j++) {
-				values[j]=($("input[data-column="+j+"][data-line="+i+"]").val());
-			}
-			numbers=0;
-			for (var v = 1; v < 10; v++) {
-				if($.inArray(""+v, values)!=-1) {
-					numbers++;
-				}
-			}
-			var k=0;
 
-			if(numbers == 9) {
-				$("input[data-line="+i+"]").parent().each( function(){
-					$(this).animate({backgroundColor: "#FF8C00"}, 1000)
-						.delay(2000).animate({backgroundColor: "#FFFFFF"}, 1000).delay(1000);				
-					k++;
-
-				})
-			}
+	//REMOVE INDIVIDUAL HIGHLIGHT WHEN CHANGE TO EMPTY
+	$(".dad-board").on("change", "input.individual-highlight", function(){
+		if($(this).val() === '')
+		{
+			$(this).removeClass("individual-highlight");
 		}
-		
-	}
+	})
 
-
-	$(".dad-board").on("dblclick", 'input.with-value', function(){
+	 // ADD INDIVIDUAL HIGHLIGHT
+	$(".dad-board").on("dblclick", 'input.with-value:not(.individual-highlight)', function(){
 		$(this).addClass("individual-highlight");
 		var id = setTimeout(function(){ $(this).removeClass("individual-highlight"); }, 5000);
 		currentTimeouts.push(id);
 	});
 
-	// [4] HIGHLIGHT BUTTONS
+	// REMOVE INDIVIDUAL HIGHLIGHT
+	$(".dad-board").on("dblclick", "input.individual-highlight", function(){
+		$(this).removeClass("individual-highlight");
+	})
+
+	//REMOVE GROUP HIGHLIGHT ON INPUT WHEN CHANGED TO EMPTY
+	$(".dad-board").on("change", "input.highlight", function(){
+		if($(this).val() === "")
+			$(this).removeClass("highlight");
+	})
+
+
+	//HIGHLIGHT INPUTS WITH CERTAIN VALUE WHEN BUTTON IS CLICKED
 	$("#highlightButtons :button").on("click", function(){
 		$("input.highlight").removeClass("highlight");
 		var number = $(this).val();
@@ -194,25 +194,69 @@
 		var id = setTimeout(function(){ found.removeClass("highlight"); }, 5000);
 		currentTimeouts.push(id);
 	});
+	
+	var verify = function () {
+        var values=[];
+        var numbers;
+        var object={};
+
+       	$(".dad-row").each(function(){
+       		
+
+       		/*var lineNumbers = $(this).find("input").val();
+       		console.log(lineNumbers);*/
+
+       	});
+       	/*
+        for (var i = 0; i < 9; i++) {
+            for(var j = 0 ; j < 9 ; j++) {
+                values[j]=($("input[data-column="+j+"][data-line="+i+"]").val());
+            }
+            numbers=0;
+            for (var v = 1; v < 10; v++) {
+                if($.inArray(""+v, values)!=-1) {
+                    numbers++;
+                }
+            }
+            var k=0;
+ 
+            if(numbers == 9 && $.inArray(i, completedRows)==-1) {
+                object=$("input[data-line="+i+"]").parent();
+                var time = 55;
+                $(object).each(function() {
+                    var cell = $(object[k]);
+                    setTimeout(function () {
+                        $(cell).animate({backgroundColor: "#FF8C00"}, 550).delay(55).animate({backgroundColor: "#FFFFFF"}, 550);
+                    }, time);
+                    time+=55;
+                    k++;
+                });
+                completedRows.push(i);
+            }
+        }*/
+       
+    }
+
 
 	var timer = function(){
 
 		var gameMilis = new Date() - initialTime;
 		gameMilis /= 1000;
-		var seconds = Math.round(gameMilis % 60);
+		var seconds = Math.floor(gameMilis % 60);
 		gameMilis /= 60;
-		var minutes = Math.round(gameMilis % 60);
+		var minutes = Math.floor(gameMilis % 60);
 		gameMilis /= 60;
-		var hours = Math.round(gameMilis % 24);
+		var hours = Math.floor(gameMilis % 24);
 
 	}
 
-	var stopTimeouts = function(){
-		for(var i = 0; i < currentTimeouts.length; i++)
+	var stopTimeouts = function(array){
+		for(var i = 0; i < array.length; i++)
 		{	
 			clearTimeout(currentTimeouts[i]);
 		}
-		currentTimeouts = [];
+
+		array = [];
 	}
 
 	var animateSquare = function(input){
