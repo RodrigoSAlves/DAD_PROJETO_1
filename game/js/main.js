@@ -260,6 +260,7 @@
 		array = [];
 	}
 
+	//Done
 	var animateSquare = function(input){
 
 		var sline = Math.floor(input.attr("data-line") / 3);
@@ -283,12 +284,12 @@
 						cellsArray.push(input);
 				}
 				else{
-					return null;
+					return;
 				}
 			}
 		}
 
-		return cellsArray;
+		animateInputs(cellsArray);
 	}
 
 	var animateLine = function(input)
@@ -303,11 +304,34 @@
 	var animateColumn = function(input)
 	{
 		var array = [];
-		var values = $("input[data-column")
+		var values = $("input[data-column="+input.attr("data.column")+"]");
+		console.log("")
 	}
 
 	var animateInputs = function(array)
 	{
+		
+	}
+
+
+	//[13] Finish
+	$("#btn-finish").click(function(){
+		$("#loading").removeClass("invisible");
+
+		showMessageFinish();
+	});
+
+	var showMessageFinish = function(){
+		$('#message').text("Game Won Congratulations!!");
+		timer();
+		$("#dialog").dialog({
+			modal: true,
+			buttons:{
+				Ok: function(){
+					$(this).dialog("close");
+				}
+			}
+		});
 
 	}
 
