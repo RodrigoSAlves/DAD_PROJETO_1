@@ -156,6 +156,8 @@
 			}
 		}
 		verify();
+		console.log(animateSquare($(this)));
+		animateLine($(this));
 	});
 
 
@@ -201,10 +203,9 @@
         var object={};
 
        	$(".dad-row").each(function(){
-       		
+       		var lineNumbers = $(this).find("input").val();
 
-       		/*var lineNumbers = $(this).find("input").val();
-       		console.log(lineNumbers);*/
+       		
 
        	});
        	/*
@@ -261,19 +262,52 @@
 
 	var animateSquare = function(input){
 
-		var sline = Math.ceil(input.attr("data-line") / 3);
-		var scol = Math.ceil(input.attr("data-column") /3);
+		var sline = Math.floor(input.attr("data-line") / 3);
+		var scol = Math.floor(input.attr("data-column") / 3);
 
-		var firstElemLine = (sline - 1) * 3;
-		var firstElemCol = (scol - 1) * 3;
+		var lineFirstElem = sline * 3;
+		var colFirstElem = scol * 3;
 
-		for(var i = sline; i < sline + 3; i++)
-		{
-			for(var j = scol; j < scol + 3; j++)
-			{
+		var valuesArray = [];
+		var cellsArray = [];
 
+		for(var i = lineFirstElem; i < lineFirstElem + 3; i++)
+		{	
+			for(var j = colFirstElem; j < colFirstElem + 3; j++)
+			{	
+				var input = $("input[data-column="+j+"][data-line="+i+"]");
+
+				if(input.val() != "" && $.inArray(input.val(), valuesArray) == -1)
+				{
+						valuesArray.push(input.val());
+						cellsArray.push(input);
+				}
+				else{
+					return null;
+				}
 			}
 		}
+
+		return cellsArray;
+	}
+
+	var animateLine = function(input)
+	{
+		var array = [];
+		var values = $(".dad-row").eq(input.attr("data-line")).val();
+
+		console.log(values);
+	
+	}
+
+	var animateColumn = function(input)
+	{
+		var array = [];
+		var values = $("input[data-column")
+	}
+
+	var animateInputs = function(array)
+	{
 
 	}
 
