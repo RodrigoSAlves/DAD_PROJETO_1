@@ -265,8 +265,8 @@
 				}
 		}
 
-		return lineInputs;
-		}
+		animateInputs(lineInputs);
+	}
 
 
 	var animateColumn = function(input)
@@ -284,7 +284,7 @@
 					return null;
 				}
 		}
-		return colInputs;
+		animateInputs(colInputs);
 	}
 
 	var animateInputs = function(array)
