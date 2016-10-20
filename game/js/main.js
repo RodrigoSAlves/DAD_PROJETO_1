@@ -10,7 +10,6 @@
 
 	var initialTime;
 	var currentTimeouts = [];
-	var numbers = ["1","2","3","4","5","6","7","8","9"];
 
 	var init = function()
 	{	
@@ -153,10 +152,11 @@
 				$(this).attr("value", $(this).val());
 			}
 		}
-		verify();
-		animateSquare($(this));
+
+
+		animateSquare($(this));		
 		animateLine($(this));
-		console.log(animateColumn($(this)));
+		animateColumn($(this));
 	});
 
 
@@ -196,47 +196,6 @@
 		currentTimeouts.push(id);
 	});
 	
-	var verify = function () {
-        var values=[];
-        var numbers;
-        var object={};
-
-       	$(".dad-row").each(function(){
-       		var lineNumbers = $(this).find("input").val();
-
-       		
-
-       	});
-       	/*
-        for (var i = 0; i < 9; i++) {
-            for(var j = 0 ; j < 9 ; j++) {
-                values[j]=($("input[data-column="+j+"][data-line="+i+"]").val());
-            }
-            numbers=0;
-            for (var v = 1; v < 10; v++) {
-                if($.inArray(""+v, values)!=-1) {
-                    numbers++;
-                }
-            }
-            var k=0;
- 
-            if(numbers == 9 && $.inArray(i, completedRows)==-1) {
-                object=$("input[data-line="+i+"]").parent();
-                var time = 55;
-                $(object).each(function() {
-                    var cell = $(object[k]);
-                    setTimeout(function () {
-                        $(cell).animate({backgroundColor: "#FF8C00"}, 550).delay(55).animate({backgroundColor: "#FFFFFF"}, 550);
-                    }, time);
-                    time+=55;
-                    k++;
-                });
-                completedRows.push(i);
-            }
-        }*/
-       
-    }
-
 
 	var timer = function(){
 
@@ -248,6 +207,7 @@
 		gameMilis /= 60;
 		var hours = Math.floor(gameMilis % 24);
 
+		$("#time").text("Time: "+hours+" : "+minutes+" : "+seconds);
 	}
 
 	var stopTimeouts = function(array){
@@ -332,19 +292,24 @@
 
 	var animateInputs = function(array)
 	{
-		
+		var time = 55;
+        $(array).each(function() {
+            var cell = $(this).parent();
+            setTimeout(function () {
+                $(cell).animate({backgroundColor: "#FF8C00"}, 550).delay(55).animate({backgroundColor: "#FFFFFF"}, 550);
+            }, time+=55);
+        });		
 	}
 
 
 	//[13] Finish
-	$("#btn-finish").click(function(){
+	$("#btn-check").click(function(){
 		$("#loading").removeClass("invisible");
-
 		showMessageFinish();
 	});
 
 	var showMessageFinish = function(){
-		$('#message').text("Game Won Congratulations!!");
+		$('#message').text("Game Won, congratulations!!");
 		timer();
 		$("#dialog").dialog({
 			modal: true,
@@ -354,7 +319,6 @@
 				}
 			}
 		});
-
 	}
 
 
