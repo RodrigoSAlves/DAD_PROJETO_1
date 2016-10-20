@@ -106,7 +106,7 @@
 
 		if(currentTimeouts.length !=0 )
 
-			stopTimeouts();
+		stopTimeouts();
 	}
 
 	//NEW GAME BUTTON
@@ -247,16 +247,15 @@
 		var minutes = Math.floor(gameMilis % 60);
 		gameMilis /= 60;
 		var hours = Math.floor(gameMilis % 24);
-
 	}
 
-	var stopTimeouts = function(array){
-		for(var i = 0; i < array.length; i++)
+	var stopTimeouts = function(){
+		for(var i = 0; i < currentTimeouts.length; i++)
 		{	
 			clearTimeout(currentTimeouts[i]);
 		}
 
-		array = [];
+		currentTimeouts = [];
 	}
 
 	//Done
@@ -287,7 +286,6 @@
 				}
 			}
 		}
-
 		animateInputs(cellsArray);
 	}
 
@@ -304,7 +302,7 @@
 	{
 		var array = [];
 		var values = $("input[data-column="+input.attr("data.column")+"]");
-		console.log("")
+		console.log("");
 	}
 
 	var animateInputs = function(array)
