@@ -10,8 +10,6 @@
 
 	var initialTime;
 	var currentTimeouts = [];
-	var indivHighlights = [];
-	var groupHighlights = [];
 
 	var init = function()
 	{	
@@ -154,9 +152,11 @@
 				$(this).attr("value", $(this).val());
 			}
 		}
-		//verify();
+
+
 		animateSquare($(this));		
 		animateLine($(this));
+		animateColumn($(this));
 	});
 
 
@@ -196,47 +196,6 @@
 		currentTimeouts.push(id);
 	});
 	
-	/*var verify = function () {
-        var values=[];
-        var numbers;
-        var object={};
-
-       	$(".dad-row").each(function(){
-       		var lineNumbers = $(this).find("input").val();
-
-       		
-
-       	});
-       	/*
-        for (var i = 0; i < 9; i++) {
-            for(var j = 0 ; j < 9 ; j++) {
-                values[j]=($("input[data-column="+j+"][data-line="+i+"]").val());
-            }
-            numbers=0;
-            for (var v = 1; v < 10; v++) {
-                if($.inArray(""+v, values)!=-1) {
-                    numbers++;
-                }
-            }
-            var k=0;
- 
-            if(numbers == 9 && $.inArray(i, completedRows)==-1) {
-                object=$("input[data-line="+i+"]").parent();
-                var time = 55;
-                $(object).each(function() {
-                    var cell = $(object[k]);
-                    setTimeout(function () {
-                        $(cell).animate({backgroundColor: "#FF8C00"}, 550).delay(55).animate({backgroundColor: "#FFFFFF"}, 550);
-                    }, time);
-                    time+=55;
-                    k++;
-                });
-                completedRows.push(i);
-            }
-        }
-       
-    }*/
-
 
 	var timer = function(){
 
@@ -247,6 +206,7 @@
 		var minutes = Math.floor(gameMilis % 60);
 		gameMilis /= 60;
 		var hours = Math.floor(gameMilis % 24);
+		$("#time").text("Time: "+hours+" : "+minutes+" : "+seconds);
 	}
 
 	var stopTimeouts = function(){
@@ -290,19 +250,41 @@
 	}
 
 	var animateLine = function(input)
-	{
-		var array = [];
-		var values = $(".dad-row").eq(input.attr("data-line")).val();
+	{	
+		var valuesArray = [];
+		var lineInputs = $("input[data-line="+input.attr("data-line")+"]");
 
-		console.log(values);
-	
-	}
+		for(var i = 0; i < lineInputs.length; i++)
+		{
+				if(lineInputs.eq(i).val() != "" && $.inArray(lineInputs.eq(i).val(), valuesArray) == -1)
+				{
+						valuesArray.push(lineInputs.eq(i).val());
+				}
+				else{
+					return null;
+				}
+		}
+
+		return lineInputs;
+		}
+
 
 	var animateColumn = function(input)
 	{
-		var array = [];
-		var values = $("input[data-column="+input.attr("data.column")+"]");
-		console.log("");
+		var valuesArray = [];
+		var colInputs = $("input[data-column="+input.attr("data-column")+"]");
+
+		for(var i = 0; i < colInputs.length; i++)
+		{
+				if(colInputs.eq(i).val() != "" && $.inArray(colInputs.eq(i).val(), valuesArray) == -1)
+				{
+						valuesArray.push(colInputs.eq(i).val());
+				}
+				else{
+					return null;
+				}
+		}
+		return colInputs;
 	}
 
 	var animateInputs = function(array)
@@ -318,14 +300,13 @@
 
 
 	//[13] Finish
-	$("#btn-finish").click(function(){
+	$("#btn-check").click(function(){
 		$("#loading").removeClass("invisible");
-
 		showMessageFinish();
 	});
 
 	var showMessageFinish = function(){
-		$('#message').text("Game Won Congratulations!!");
+		$('#message').text("Game Won, congratulations!!");
 		timer();
 		$("#dialog").dialog({
 			modal: true,
