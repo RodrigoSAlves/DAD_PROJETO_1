@@ -249,6 +249,7 @@
 		gameMilis /= 60;
 		var hours = Math.floor(gameMilis % 24);
 
+		$("#time").text("Time: "+hours+" : "+minutes+" : "+seconds);
 	}
 
 	var stopTimeouts = function(array){
@@ -315,14 +316,13 @@
 
 
 	//[13] Finish
-	$("#btn-finish").click(function(){
+	$("#btn-check").click(function(){
 		$("#loading").removeClass("invisible");
-
 		showMessageFinish();
 	});
 
 	var showMessageFinish = function(){
-		$('#message').text("Game Won Congratulations!!");
+		$('#message').text("Game Won, congratulations!!");
 		timer();
 		$("#dialog").dialog({
 			modal: true,
