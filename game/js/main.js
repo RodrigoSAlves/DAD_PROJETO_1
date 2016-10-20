@@ -10,9 +10,7 @@
 
 	var initialTime;
 	var currentTimeouts = [];
-	var indivHighlights = [];
-	var groupHighlights = [];
-	var completedRows = [];
+	var numbers = ["1","2","3","4","5","6","7","8","9"];
 
 	var init = function()
 	{	
@@ -156,8 +154,9 @@
 			}
 		}
 		verify();
-		console.log(animateSquare($(this)));
+		animateSquare($(this));
 		animateLine($(this));
+		console.log(animateColumn($(this)));
 	});
 
 
@@ -293,19 +292,42 @@
 	}
 
 	var animateLine = function(input)
-	{
-		var array = [];
-		var values = $(".dad-row").eq(input.attr("data-line")).val();
+	{	
+		var valuesArray = [];
+		var lineInputs = $("input[data-line="+input.attr("data-line")+"]");
 
-		console.log(values);
-	
-	}
+		for(var i = 0; i < lineInputs.length; i++)
+		{
+				if(lineInputs.eq(i).val() != "" && $.inArray(lineInputs.eq(i).val(), valuesArray) == -1)
+				{
+						valuesArray.push(lineInputs.eq(i).val());
+				}
+				else{
+					return null;
+				}
+		}
+
+		return lineInputs;
+		}
+
 
 	var animateColumn = function(input)
 	{
-		var array = [];
-		var values = $("input[data-column="+input.attr("data.column")+"]");
-		console.log("")
+		var valuesArray = [];
+		var colInputs = $("input[data-column="+input.attr("data-column")+"]");
+
+		for(var i = 0; i < colInputs.length; i++)
+		{
+				if(colInputs.eq(i).val() != "" && $.inArray(colInputs.eq(i).val(), valuesArray) == -1)
+				{
+						valuesArray.push(colInputs.eq(i).val());
+				}
+				else{
+					return null;
+				}
+		}
+		return colInputs;
+		
 	}
 
 	var animateInputs = function(array)
