@@ -12,7 +12,6 @@
 	var currentTimeouts = [];
 	var indivHighlights = [];
 	var groupHighlights = [];
-	var completedRows = [];
 
 	var init = function()
 	{	
@@ -155,8 +154,8 @@
 				$(this).attr("value", $(this).val());
 			}
 		}
-		verify();
-		console.log(animateSquare($(this)));
+		//verify();
+		animateSquare($(this));		
 		animateLine($(this));
 	});
 
@@ -197,7 +196,7 @@
 		currentTimeouts.push(id);
 	});
 	
-	var verify = function () {
+	/*var verify = function () {
         var values=[];
         var numbers;
         var object={};
@@ -234,9 +233,9 @@
                 });
                 completedRows.push(i);
             }
-        }*/
+        }
        
-    }
+    }*/
 
 
 	var timer = function(){
@@ -288,7 +287,7 @@
 			}
 		}
 
-		return cellsArray;
+		animateInputs(cellsArray);
 	}
 
 	var animateLine = function(input)
@@ -308,7 +307,13 @@
 
 	var animateInputs = function(array)
 	{
-
+		var time = 55;
+        $(array).each(function() {
+            var cell = $(this).parent();
+            setTimeout(function () {
+                $(cell).animate({backgroundColor: "#FF8C00"}, 550).delay(55).animate({backgroundColor: "#FFFFFF"}, 550);
+            }, time+=55);
+        });
 	}
 
 
