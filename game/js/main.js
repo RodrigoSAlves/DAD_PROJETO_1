@@ -259,6 +259,7 @@
 		array = [];
 	}
 
+	//Done
 	var animateSquare = function(input){
 
 		var sline = Math.floor(input.attr("data-line") / 3);
@@ -282,7 +283,7 @@
 						cellsArray.push(input);
 				}
 				else{
-					return null;
+					return;
 				}
 			}
 		}
@@ -302,7 +303,8 @@
 	var animateColumn = function(input)
 	{
 		var array = [];
-		var values = $("input[data-column")
+		var values = $("input[data-column="+input.attr("data.column")+"]");
+		console.log("")
 	}
 
 	var animateInputs = function(array)
@@ -313,7 +315,28 @@
             setTimeout(function () {
                 $(cell).animate({backgroundColor: "#FF8C00"}, 550).delay(55).animate({backgroundColor: "#FFFFFF"}, 550);
             }, time+=55);
-        });
+        });		
+	}
+
+
+	//[13] Finish
+	$("#btn-finish").click(function(){
+		$("#loading").removeClass("invisible");
+
+		showMessageFinish();
+	});
+
+	var showMessageFinish = function(){
+		$('#message').text("Game Won Congratulations!!");
+		timer();
+		$("#dialog").dialog({
+			modal: true,
+			buttons:{
+				Ok: function(){
+					$(this).dialog("close");
+				}
+			}
+		});
 	}
 
 
