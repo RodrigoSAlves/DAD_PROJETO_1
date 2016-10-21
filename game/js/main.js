@@ -155,6 +155,7 @@
 		animateSquare($(this));		
 		animateLine($(this));
 		animateColumn($(this));
+		animate();
 	});
 
 
@@ -244,7 +245,7 @@
 				}
 			}
 		}
-		animateInputs(cellsArray);
+		animationsToDo.push(cellsArray);
 	}
 
 	var animateLine = function(input)
@@ -263,7 +264,7 @@
 				}
 		}
 
-		animateInputs(lineInputs);
+		animationsToDo.push(lineInputs);
 	}
 
 	var animateColumn = function(input)
@@ -281,10 +282,33 @@
 					return null;
 				}
 		}
-		animateInputs(colInputs);
+		animationsToDo.push(colInputs);
 	}
 
-	var animateInputs = function(array)
+	var animate = function(index){
+ 
+        if(animationsToDo.length > 0)
+        {
+            var array = animationsToDo.splice(0,1);
+ 			console.log(array);
+ 			$(array).each(function(index) {
+ 
+	            if(index == array.length - 1 && animationsToDo.length < 1)
+	            {
+	                var time = 55;
+
+		            var cell = $(this).parent();
+		            $(cell).delay(time+=55).animate({backgroundColor: "#FF8C00"}, 550).delay(200).animate({backgroundColor: "#FFFFFF"}, 550);
+			        
+	                animate(index);
+	            }
+            });	
+        }
+ 
+        animationsToDo = [];
+    }
+
+	/*var animateInputs = function(array)
 	{
 		var time = 55;
 		
@@ -292,7 +316,7 @@
             var cell = $(this).parent();
             $(cell).delay(time+=55).animate({backgroundColor: "#FF8C00"}, 550).delay(200).animate({backgroundColor: "#FFFFFF"}, 550);
         });	
-	}
+	}*/
 
 	//[13] Finish
 	$("#btn-check").click(function(){
@@ -311,13 +335,6 @@
 				}
 			}
 		});
-	}
-
-	var animationHandler = function () {
-		if(animationsToDo.length>0) {
-			animationsToDo[0]
-			
-		}
 	}
 
 	init();
