@@ -10,6 +10,7 @@
 
 	var initialTime;
 	var currentTimeouts = [];
+	var animationsToDo = [];
 
 	var init = function()
 	{	
@@ -54,7 +55,7 @@
 	{
 		var option = $("#select-mode option:selected").val();
 
-		$.get( "http://198.211.118.123:8080/board/"+option)
+		$.get( "http://198.211.118.123:8080/test"/*+option*/)
 		.done(function(data) {
 			populateInitialTable(data);
 			$("#loading").addClass("invisible");
@@ -121,8 +122,6 @@
 		checkTable();
 	})
 
-	
-
 	//EXCEPTION: html type="number" accepts numbers as well as "e"
 	// To solve this exception we need to use keyup as onchange doesn't work
 	$("input:not(.initial)").on("keyup", function(event){
@@ -130,7 +129,6 @@
 			$(this).val("");
 		}
 	});
-
 
 	//INPUT :NOT(.INITIAL) HANDLER
 	$(".dad-board").on("change", "input:not(.initial)", function(){
@@ -268,7 +266,6 @@
 		animateInputs(lineInputs);
 	}
 
-
 	var animateColumn = function(input)
 	{
 		var valuesArray = [];
@@ -290,14 +287,12 @@
 	var animateInputs = function(array)
 	{
 		var time = 55;
+		
         $(array).each(function() {
             var cell = $(this).parent();
-            setTimeout(function () {
-                $(cell).animate({backgroundColor: "#FF8C00"}, 550).delay(55).animate({backgroundColor: "#FFFFFF"}, 550);
-            }, time+=55);
-        });		
+            $(cell).delay(time+=55).animate({backgroundColor: "#FF8C00"}, 550).delay(200).animate({backgroundColor: "#FFFFFF"}, 550);
+        });	
 	}
-
 
 	//[13] Finish
 	$("#btn-check").click(function(){
@@ -318,8 +313,13 @@
 		});
 	}
 
+	var animationHandler = function () {
+		if(animationsToDo.length>0) {
+			animationsToDo[0]
+			
+		}
+	}
 
 	init();
-
 
 })();
