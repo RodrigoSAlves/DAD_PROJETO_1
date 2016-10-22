@@ -271,7 +271,6 @@
 	{
 		var valuesArray = [];
 		var colInputs = $("input[data-column="+input.attr("data-column")+"]");
-
 		for(var i = 0; i < colInputs.length; i++)
 		{
 				if(colInputs.eq(i).val() != "" && $.inArray(colInputs.eq(i).val(), valuesArray) == -1)
@@ -286,26 +285,27 @@
 	}
 
 	var animate = function(index){
- 
+ 		
         if(animationsToDo.length > 0)
-        {
-            var array = animationsToDo.splice(0,1);
- 			console.log(array);
- 			$(array).each(function(index) {
- 
-	            if(index == array.length - 1 && animationsToDo.length < 1)
-	            {
-	                var time = 55;
+        {	
 
-		            var cell = $(this).parent();
-		            $(cell).delay(time+=55).animate({backgroundColor: "#FF8C00"}, 550).delay(200).animate({backgroundColor: "#FFFFFF"}, 550);
-			        
-	                animate(index);
-	            }
+            var array = animationsToDo.splice(0,1);
+            var time = 55;
+ 			$(array).each(function(index) {
+ 				console.log(array);
+ 				console.log(array.length);
+	            var cell = $(this).parent();
+
+	            $(cell).delay(time+=55).animate({backgroundColor: "#FF8C00"}, 550).delay(200).animate({backgroundColor: "#FFFFFF"}, 550);
+
+	            if(index == array.length - 1 && animationsToDo.length > 0)
+	            	$(cell).delay(time+=55).animate({backgroundColor: "#FF8C00"}, 550).delay(200).animate({backgroundColor: "#FFFFFF"}, 550).animate();
+
             });	
         }
- 
         animationsToDo = [];
+ 
+       
     }
 
 	/*var animateInputs = function(array)
