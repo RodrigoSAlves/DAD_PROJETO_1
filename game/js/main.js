@@ -290,6 +290,7 @@
         {	
 
             var array = animationsToDo.splice(0,1);
+            array = $(array[0]).parent();
             var time = 55;
  			$(array).each(function(index) {
  				console.log(array);
