@@ -152,10 +152,19 @@
 		}
 
 
-		animateSquare($(this));		
 		animateLine($(this));
 		animateColumn($(this));
-		animate();
+		animateSquare($(this));		
+		console.log(animationsToDo);
+		$(animationsToDo).each(function(){
+			console.log("each");
+			console.log($(this));
+			
+		})
+		console.log("splice");
+		var array = animationsToDo.splice(0,1);
+		console.log(array);
+		//animate();
 	});
 
 
@@ -284,39 +293,23 @@
 		animationsToDo.push(colInputs);
 	}
 
-	var animate = function(index){
- 		
+	var animate = function(){
+ 	
         if(animationsToDo.length > 0)
         {	
-
+        	var time = 55;
             var array = animationsToDo.splice(0,1);
-            var time = 55;
- 			$(array).each(function(index) {
- 				console.log(array);
- 				console.log(array.length);
-	            var cell = $(this).parent();
 
-	            $(cell).delay(time+=55).animate({backgroundColor: "#FF8C00"}, 550).delay(200).animate({backgroundColor: "#FFFFFF"}, 550);
-
-	            if(index == array.length - 1 && animationsToDo.length > 0)
-	            	$(cell).delay(time+=55).animate({backgroundColor: "#FF8C00"}, 550).delay(200).animate({backgroundColor: "#FFFFFF"}, 550).animate();
-
-            });	
+            for(var i = 0; i < array.length; i++)
+            {
+            	console.log(array.children);
+            	console.log(array.length);
+            	$(cell).delay(time+=55).animate({backgroundColor: "#FF8C00"}, 550).delay(200).animate({backgroundColor: "#FFFFFF"}, 550);
+            }          
         }
-        animationsToDo = [];
- 
-       
+		animationsToDo = [];       
     }
 
-	/*var animateInputs = function(array)
-	{
-		var time = 55;
-		
-        $(array).each(function() {
-            var cell = $(this).parent();
-            $(cell).delay(time+=55).animate({backgroundColor: "#FF8C00"}, 550).delay(200).animate({backgroundColor: "#FFFFFF"}, 550);
-        });	
-	}*/
 
 	//[13] Finish
 	$("#btn-check").click(function(){
