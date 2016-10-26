@@ -11,6 +11,7 @@
 	var initialTime;
 	var currentTimeouts = [];
 	var animationsToDo = [];
+	var animationRunning = false;
 
 	var init = function()
 	{	
@@ -155,16 +156,8 @@
 		animateLine($(this));
 		animateColumn($(this));
 		animateSquare($(this));		
-		console.log(animationsToDo);
-		$(animationsToDo).each(function(){
-			console.log("each");
-			console.log($(this));
-			
-		})
-		console.log("splice");
-		var array = animationsToDo.splice(0,1);
-		console.log(array);
-		//animate();
+
+		animateCells();
 	});
 
 
@@ -242,18 +235,21 @@
 		{	
 			for(var j = colFirstElem; j < colFirstElem + 3; j++)
 			{	
-				var input = $("input[data-column="+j+"][data-line="+i+"]");
 
+				var input = $("input[data-column="+j+"][data-line="+i+"]");
+				console.log(input);
 				if(input.val() != "" && $.inArray(input.val(), valuesArray) == -1)
 				{
 						valuesArray.push(input.val());
-						cellsArray.push(input);
+						cellsArray.push(input.get(0));
 				}
 				else{
 					return;
 				}
 			}
 		}
+		console.log(cellsArray);
+		console.log(valuesArray);
 		animationsToDo.push(cellsArray);
 	}
 
@@ -272,7 +268,7 @@
 					return null;
 				}
 		}
-
+		console.log(lineInputs);
 		animationsToDo.push(lineInputs);
 	}
 
@@ -293,22 +289,48 @@
 		animationsToDo.push(colInputs);
 	}
 
-	var animate = function(){
- 	
-        if(animationsToDo.length > 0)
-        {	
+	var animateCells = function(){
+ 		console.log(animationRunning);
+ 		console.log($(':animated').length);
+        if(!animationRunning && animationsToDo.length > 0)
+        {
+        	//console.log("entrou if")
+        	animationRunning = true;
         	var time = 55;
             var array = animationsToDo.splice(0,1);
 
-            for(var i = 0; i < array.length; i++)
-            {
-            	console.log(array.children);
-            	console.log(array.length);
-            	$(cell).delay(time+=55).animate({backgroundColor: "#FF8C00"}, 550).delay(200).animate({backgroundColor: "#FFFFFF"}, 550);
-            }          
-        }
-		animationsToDo = [];       
+			array = $(array[0]).parent();
+ 			$(array).each(function(index) {
+ 				
+ 				var cell = $(this);
+ 				//console.log(animationsToDo);
+ 				//console.log(index);
+ 				if(index == array.length - 1 && animationsToDo.length > 0)
+            	{	
+            		//on the last one, we call the function again, to do the following animation
+            	//	console.log("aqui");
+
+            		$(cell).delay(time+=55).animate({backgroundColor: "#FF8C00"}, 550).delay(200).animate({backgroundColor: "#FFFFFF"},{duration:500, done: update});
+            	}
+            	else{
+            	//	console.log("else");
+            		
+            		//1 - 7 index, where we only need to do the animation.
+            		$(cell).delay(time+=55).animate({backgroundColor: "#FF8C00"}, 550).delay(200).animate({backgroundColor: "#FFFFFF"}, 550);
+            	}
+            });  
+            	animationRunning = false;              
     }
+}
+
+	var update = function (){
+		console.log("dentro funcao");
+		console.log(animationsToDo);
+		animationRunning = false;
+		if(animationsToDo.length > 0){
+			animateCells();
+		}
+	}
 
 
 	//[13] Finish
