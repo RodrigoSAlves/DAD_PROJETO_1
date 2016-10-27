@@ -142,13 +142,17 @@
 			$(this).removeAttr("value");
 		}
 		else{
-			if($(this).val() < 0 || $(this).val() > 9 || $(this).val().length > 1)
+			if($(this).val() < 1 || $(this).val() > 9 || $(this).val().length > 1)
 			{
 				$(this).val("");
 			}
 			else{
 				$(this).addClass("with-value");
 				$(this).attr("value", $(this).val());
+				/*if($("input:not(.value)").length==0) {
+					console.log("teste");
+					console.log($("input.value").length);
+				}*/
 			}
 		}
 
@@ -158,8 +162,9 @@
 		animateSquare($(this));		
 
 		animateCells();
-	});
 
+
+	});
 
 	//REMOVE INDIVIDUAL HIGHLIGHT WHEN CHANGE TO EMPTY
 	$(".dad-board").on("change", "input.individual-highlight", function(){
@@ -235,9 +240,7 @@
 		{	
 			for(var j = colFirstElem; j < colFirstElem + 3; j++)
 			{	
-
 				var input = $("input[data-column="+j+"][data-line="+i+"]");
-				console.log(input);
 				if(input.val() != "" && $.inArray(input.val(), valuesArray) == -1)
 				{
 						valuesArray.push(input.val());
@@ -248,8 +251,6 @@
 				}
 			}
 		}
-		console.log(cellsArray);
-		console.log(valuesArray);
 		animationsToDo.push(cellsArray);
 	}
 
@@ -268,7 +269,6 @@
 					return null;
 				}
 		}
-		console.log(lineInputs);
 		animationsToDo.push(lineInputs);
 	}
 
@@ -290,48 +290,36 @@
 	}
 
 	var animateCells = function(){
- 		console.log(animationRunning);
- 		console.log($(':animated').length);
+		console.log(animationRunning);
         if(!animationRunning && animationsToDo.length > 0)
         {
-        	//console.log("entrou if")
         	animationRunning = true;
         	var time = 55;
-            var array = animationsToDo.splice(0,1);
+            var array = animationsToDo.shift();
 
-			array = $(array[0]).parent();
  			$(array).each(function(index) {
  				
- 				var cell = $(this);
- 				//console.log(animationsToDo);
- 				//console.log(index);
- 				if(index == array.length - 1 && animationsToDo.length > 0)
+ 				var cell = $(this).parent();
+ 				if(index == array.length - 1)
             	{	
             		//on the last one, we call the function again, to do the following animation
-            	//	console.log("aqui");
-
             		$(cell).delay(time+=55).animate({backgroundColor: "#FF8C00"}, 550).delay(200).animate({backgroundColor: "#FFFFFF"},{duration:500, done: update});
+
             	}
-            	else{
-            	//	console.log("else");
-            		
+            	else {
             		//1 - 7 index, where we only need to do the animation.
             		$(cell).delay(time+=55).animate({backgroundColor: "#FF8C00"}, 550).delay(200).animate({backgroundColor: "#FFFFFF"}, 550);
             	}
-            });  
-            	animationRunning = false;              
-    }
-}
+            });           
+	    }
+	}
 
 	var update = function (){
-		console.log("dentro funcao");
-		console.log(animationsToDo);
 		animationRunning = false;
 		if(animationsToDo.length > 0){
 			animateCells();
 		}
 	}
-
 
 	//[13] Finish
 	$("#btn-check").click(function(){
@@ -355,3 +343,5 @@
 	init();
 
 })();
+
+
