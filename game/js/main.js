@@ -291,10 +291,10 @@
 
 	var animateCells = function(){
  		console.log(animationRunning);
- 		console.log($(':animated').length);
+
         if(!animationRunning && animationsToDo.length > 0)
         {
-        	//console.log("entrou if")
+
         	animationRunning = true;
         	var time = 55;
             var array = animationsToDo.splice(0,1);
@@ -303,18 +303,13 @@
  			$(array).each(function(index) {
  				
  				var cell = $(this);
- 				//console.log(animationsToDo);
- 				//console.log(index);
+
  				if(index == array.length - 1 && animationsToDo.length > 0)
             	{	
             		//on the last one, we call the function again, to do the following animation
-            	//	console.log("aqui");
-
             		$(cell).delay(time+=55).animate({backgroundColor: "#FF8C00"}, 550).delay(200).animate({backgroundColor: "#FFFFFF"},{duration:500, done: update});
             	}
-            	else{
-            	//	console.log("else");
-            		
+            	else{            		
             		//1 - 7 index, where we only need to do the animation.
             		$(cell).delay(time+=55).animate({backgroundColor: "#FF8C00"}, 550).delay(200).animate({backgroundColor: "#FFFFFF"}, 550);
             	}
@@ -324,7 +319,6 @@
 }
 
 	var update = function (){
-		console.log("dentro funcao");
 		console.log(animationsToDo);
 		animationRunning = false;
 		if(animationsToDo.length > 0){
