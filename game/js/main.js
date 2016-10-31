@@ -6,13 +6,14 @@
 
 (function() {
 	'use strict';
-	//function definition
-
+	
+	//Global Variables
 	var initialTime;
 	var currentTimeouts = [];
 	var animationsToDo = [];
 	var animationRunning = false;
 
+	//Entry point
 	var init = function()
 	{	
 		fillStudentInfo();
@@ -20,6 +21,7 @@
 		$("input:not(.initial)").attr("min", 0).attr("max", 9);
 	}
 
+	//Table functions
 	var checkTable = function() {  
 		var board=[];
 
@@ -64,33 +66,6 @@
 		.fail(function () {
 			console.log("Something went wrong");
 		});
-	}	
-
-	var populateInitialTable = function(data){
-		clearTable();
-		for(var i = 0; i < data.length; i++)
-		{	
-			$("input[data-column="+data[i].column+"][data-line="+data[i].line+"]")
-			.val(data[i].value)
-			.attr("value", data[i].value)
-			.addClass("initial")
-			.attr("disabled", true);
-		}
-		initialTime = new Date();
-	}
-
-	var fillStudentInfo = function () {
-
-		var students = $(".photo-zone");
-		$(students[3]).addClass('hidden');
-
-		$(students[0]).find("h3").eq(0).text("2140970");
-		$(students[1]).find("h3").eq(0).text("2140972");
-		$(students[2]).find("h3").eq(0).text("2140241");
-
-		$(students[0]).find("p").eq(0).text("Rodrigo Silva Alves");
-		$(students[1]).find("p").eq(0).text("André Marques Roque");
-		$(students[2]).find("p").eq(0).text("Tiago Rato Fernandes");
 	}
 
 	var clearTable = function () {
@@ -107,7 +82,37 @@
 		if(currentTimeouts.length !=0 )
 
 		stopTimeouts();
+	}	
+
+	var populateInitialTable = function(data){
+		clearTable();
+		for(var i = 0; i < data.length; i++)
+		{	
+			$("input[data-column="+data[i].column+"][data-line="+data[i].line+"]")
+			.val(data[i].value)
+			.attr("value", data[i].value)
+			.addClass("initial")
+			.attr("disabled", true);
+		}
+		initialTime = new Date();
 	}
+
+	//THIS FUNCTION 
+	var fillStudentInfo = function () {
+
+		var students = $(".photo-zone");
+		$(students[3]).addClass('hidden');
+
+		$(students[0]).find("h3").eq(0).text("2140970");
+		$(students[1]).find("h3").eq(0).text("2140972");
+		$(students[2]).find("h3").eq(0).text("2140241");
+
+		$(students[0]).find("p").eq(0).text("Rodrigo Silva Alves");
+		$(students[1]).find("p").eq(0).text("André Marques Roque");
+		$(students[2]).find("p").eq(0).text("Tiago Rato Fernandes");
+	}
+
+	
 
 	//NEW GAME BUTTON
 	$("#btn-new").click(function() {
@@ -123,7 +128,7 @@
 		checkTable();
 	})
 
-	//EXCEPTION: html type="number" accepts numbers as well as "e"
+	//EXCEPTION: html type="number" accepts not only numbers but also "e"
 	// To solve this exception we need to use keyup as onchange doesn't work
 	$("input:not(.initial)").on("keyup", function(event){
 		if(event.key == "e"){
@@ -131,40 +136,35 @@
 		}
 	});
 
-	//INPUT :NOT(.INITIAL) HANDLER
-	$(".dad-board").on("change", "input:not(.initial)", function(){
+	//INPUT THAT CAN BE MODIFIED BUT DOESN'T HAVE A VALUE
+	$(".dad-board").on("change", "input:not(.with-value)", function(){
 
-		$("input.individual-conflict").removeClass("individual-conflict");
-
-		if($(this).val() === '')
-		{
-			$(this).removeClass("with-value");
-			$(this).removeAttr("value");
-		}
-		else{
-			if($(this).val() < 1 || $(this).val() > 9 || $(this).val().length > 1)
+			if( $(this).val() === '' || $(this).val() < 1 || $(this).val() > 9 || $(this).val().length > 1)
 			{
 				$(this).val("");
 			}
 			else{
-				$(this).addClass("with-value");
-				$(this).attr("value", $(this).val());
-				/*if($("input:not(.value)").length==0) {
-					console.log("teste");
-					console.log($("input.value").length);
-				}*/
+				$(this).addClass("with-value").attr("value", $(this).val());
 			}
-		}
 
-
-		animateLine($(this));
-		animateColumn($(this));
-		animateSquare($(this));		
-
-		animateCells();
-
-
+			animationHandler($(this));
 	});
+
+	//INPUT THAT CAN BE MODIFIED BUT ALREADY HAS A VALUE
+	$(".dad-board").on("change", "input.with-value", function(){
+
+		if($('input.individual-conflict').length > 0)
+			$(this).removeClass("individual-conflict");
+
+		if($(this).val() === '' || $(this).val() < 1 || $(this).val() > 9 || $(this).val().length > 1)
+		{
+			$(this).val("").removeAttr("value").removeClass("with-value");	
+		}
+		else{
+			$(this).attr("value", $(this).val());
+		}
+	})
+
 
 	//REMOVE INDIVIDUAL HIGHLIGHT WHEN CHANGE TO EMPTY
 	$(".dad-board").on("change", "input.individual-highlight", function(){
@@ -202,6 +202,7 @@
 		currentTimeouts.push(id);
 	});
 	
+	//Timers 
 
 	var timer = function(){
 
@@ -224,8 +225,9 @@
 		currentTimeouts = [];
 	}
 
-	//Done
-	var animateSquare = function(input){
+	//Animations Section
+
+	var checkForSquareAnimation = function(input){
 
 		var sline = Math.floor(input.attr("data-line") / 3);
 		var scol = Math.floor(input.attr("data-column") / 3);
@@ -244,7 +246,7 @@
 				if(input.val() != "" && $.inArray(input.val(), valuesArray) == -1)
 				{
 						valuesArray.push(input.val());
-						cellsArray.push(input.get(0));
+						cellsArray.push(input.get());
 				}
 				else{
 					return;
@@ -254,7 +256,7 @@
 		animationsToDo.push(cellsArray);
 	}
 
-	var animateLine = function(input)
+	var checkForLineAnimation = function(input)
 	{	
 		var valuesArray = [];
 		var lineInputs = $("input[data-line="+input.attr("data-line")+"]");
@@ -272,7 +274,7 @@
 		animationsToDo.push(lineInputs);
 	}
 
-	var animateColumn = function(input)
+	var checkForColumnAnimation = function(input)
 	{
 		var valuesArray = [];
 		var colInputs = $("input[data-column="+input.attr("data-column")+"]");
@@ -289,12 +291,8 @@
 		animationsToDo.push(colInputs);
 	}
 
-	var animateCells = function(){
+	var makeAnimation = function(){
 
-        if(!animationRunning && animationsToDo.length > 0)
-        {
-
-		console.log(animationRunning);
         if(!animationRunning && animationsToDo.length > 0)
         {
         	animationRunning = true;
@@ -322,6 +320,14 @@
 		if(animationsToDo.length > 0){
 			animateCells();
 		}
+	}
+
+	var animationHandler = function (input)
+	{
+		checkForLineAnimation(input);
+		checkForColumnAnimation(input);
+		checkForSquareAnimation(input);		
+		makeAnimation();
 	}
 
 	//[13] Finish
