@@ -1,6 +1,6 @@
-// 2140000- Student name 1
-// 2140001- Student name 2
-// 2140002- Student name 3
+// 2140972- André Marques Roque
+// 2140241- Tiago Rato Fernandes
+// 2140970- Rodrigo Silva Alves
 
 // Implementation:
 
@@ -17,7 +17,7 @@
 	{	
 		fillStudentInfo();
 		requestBoard();
-		$("input:not(.initial)").attr("min", 0).attr("max", 9);
+		$("input:not(.initial)").attr("min", 1).attr("max", 9);
 	}
 
 	var checkTable = function() {  
@@ -40,14 +40,20 @@
 			contentType: 'application/json; charset=utf-8',
 			dataType: 'json',
 			success: function(data) {
-				$("#loading").addClass("invisible");
-				for(var i = 0; i < data.conflicts.length; i++)
-				{	
-					$("input[data-column="+data.conflicts[i].column+"][data-line="+data.conflicts[i].line+"]")
-					.addClass("individual-conflict");
+				if(!data.finished) {
+					$("#loading").addClass("invisible");
+					for(var i = 0; i < data.conflicts.length; i++)
+					{	
+						$("input[data-column="+data.conflicts[i].column+"][data-line="+data.conflicts[i].line+"]")
+						.addClass("individual-conflict");
+					}
+					var id = setTimeout(function(){ $("input.individual-conflict").removeClass("individual-conflict"); }, 5000);
+					currentTimeouts.push(id);
 				}
-				var id = setTimeout(function(){ $("input.individual-conflict").removeClass("individual-conflict"); }, 5000);
-				currentTimeouts.push(id);
+				else {
+					$("input.with-value").addClass("finished");
+					showMessageFinish();
+				}
 			}
 		});
 	}
@@ -105,8 +111,11 @@
 		$(".individual-conflict").removeClass("individual-conflict");
 
 		if(currentTimeouts.length !=0 )
+			stopTimeouts();
 
-		stopTimeouts();
+		$(".finished").removeClass("finished");
+
+		animationsToDo=[];
 	}
 
 	//NEW GAME BUTTON
@@ -149,21 +158,16 @@
 			else{
 				$(this).addClass("with-value");
 				$(this).attr("value", $(this).val());
-				/*if($("input:not(.value)").length==0) {
-					console.log("teste");
-					console.log($("input.value").length);
-				}*/
+				if($("input:not([value])").length==0) {
+					checkTable();
+				}
 			}
 		}
-
-
+		
 		animateLine($(this));
 		animateColumn($(this));
 		animateSquare($(this));		
-
 		animateCells();
-
-
 	});
 
 	//REMOVE INDIVIDUAL HIGHLIGHT WHEN CHANGE TO EMPTY
@@ -244,7 +248,7 @@
 				if(input.val() != "" && $.inArray(input.val(), valuesArray) == -1)
 				{
 						valuesArray.push(input.val());
-						cellsArray.push(input.get(0));
+						cellsArray.push(input.get());
 				}
 				else{
 					return;
@@ -261,13 +265,13 @@
 
 		for(var i = 0; i < lineInputs.length; i++)
 		{
-				if(lineInputs.eq(i).val() != "" && $.inArray(lineInputs.eq(i).val(), valuesArray) == -1)
-				{
-						valuesArray.push(lineInputs.eq(i).val());
-				}
-				else{
-					return null;
-				}
+			if(lineInputs.eq(i).val() != "" && $.inArray(lineInputs.eq(i).val(), valuesArray) == -1)
+			{
+					valuesArray.push(lineInputs.eq(i).val());
+			}
+			else{
+				return null;
+			}
 		}
 		animationsToDo.push(lineInputs);
 	}
@@ -278,19 +282,18 @@
 		var colInputs = $("input[data-column="+input.attr("data-column")+"]");
 		for(var i = 0; i < colInputs.length; i++)
 		{
-				if(colInputs.eq(i).val() != "" && $.inArray(colInputs.eq(i).val(), valuesArray) == -1)
-				{
-						valuesArray.push(colInputs.eq(i).val());
-				}
-				else{
-					return null;
-				}
+			if(colInputs.eq(i).val() != "" && $.inArray(colInputs.eq(i).val(), valuesArray) == -1)
+			{
+					valuesArray.push(colInputs.eq(i).val());
+			}
+			else{
+				return null;
+			}
 		}
 		animationsToDo.push(colInputs);
 	}
 
 	var animateCells = function(){
-		console.log(animationRunning);
         if(!animationRunning && animationsToDo.length > 0)
         {
         	animationRunning = true;
@@ -320,13 +323,7 @@
 			animateCells();
 		}
 	}
-
-	//[13] Finish
-	$("#btn-check").click(function(){
-		$("#loading").removeClass("invisible");
-		showMessageFinish();
-	});
-
+	
 	var showMessageFinish = function(){
 		$('#message').text("Game Won, congratulations!!");
 		timer();
@@ -335,6 +332,8 @@
 			buttons:{
 				Ok: function(){
 					$(this).dialog("close");
+					clearTable();
+					requestBoard();
 				}
 			}
 		});
